@@ -1,0 +1,53 @@
+package Project;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+
+public class FileScanServlet extends HttpServlet {
+    private static final Logger logger = LogManager.getLogger(FileScanServlet.class);
+    private static final long serialVersionUID = 1L;
+
+    // Укажите ваш VirusTotal API ключ
+    private static final String VT_API_KEY = "YOUR_VIRUSTOTAL_API_KEY";
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        resp.setContentType("application/json");
+        PrintWriter out = resp.getWriter();
+        Part filePart = req.getPart("file");  // имя поля должно быть "file"
+
+        if (filePart == null) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            out.print(new JSONObject().put("error", "File part is missing").toString());
+            return;
+        }
+
+        // Чтение файла в массив байтов
+        InputStream fileContent = filePart.getInputStream();
+        byte[] fileBytes = fileContent.readAllBytes();
+
+        try {
+            // Отправляем файл на проверку
+            JSONObject vtResponse = VirusTotalClient.scanFile(fileBytes, filePart.getSubmittedFileName(), VT_API_KEY);
+            // Логируем запрос в БД
+            DatabaseLogger.logRequest("file", filePart.getSubmittedFileName(), vtResponse.toString());
+
+            out.print(vtResponse.toString());
+        } catch (Exception ex) {
+            logger.error("Ошибка при сканировании файла", ex);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print(new JSONObject().put("error", "Internal server error").toString());
+        }
+    }
+}
