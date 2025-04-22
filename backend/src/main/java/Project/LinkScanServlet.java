@@ -18,7 +18,7 @@ public class LinkScanServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     // Укажите ваш VirusTotal API ключ
-    private static final String VT_API_KEY = "YOUR_VIRUSTOTAL_API_KEY";
+    private static final String VT_API_KEY = "f6aba97e640126d95e38d95c0d11fc4a5fdf920278fb6770486038c877f30a8d";
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)

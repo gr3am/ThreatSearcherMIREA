@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>VirusTotal Checker</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        .container { max-width: 600px; margin: auto; }
+        form { margin-bottom: 2rem; }
+        input[type="text"], input[type="file"] { width: 100%; padding: 8px; margin-top: 8px; }
+        button { padding: 10px 20px; margin-top: 10px; }
+        .result { background: #f0f0f0; padding: 10px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Проверка на безопасность</h1>
+
+    <h2>Проверка файла</h2>
+    <form id="fileForm">
+        <input type="file" id="fileInput" name="file" required />
+        <button type="submit">Отправить файл</button>
+    </form>
+    <div id="fileResult" class="result"></div>
+
+    <h2>Проверка ссылки</h2>
+    <form id="linkForm">
+        <input type="text" id="linkInput" name="url" placeholder="Введите URL" required />
+        <button type="submit">Проверить ссылку</button>
+    </form>
+    <div id="linkResult" class="result"></div>
+</div>
+
+<script>
+    // Обработка формы для файла
+    document.getElementById('fileForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var fileInput = document.getElementById('fileInput');
+      if (fileInput.files.length === 0) {
+        alert("Выберите файл");
+        return;
+      }
+
+      var formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+
+      fetch('/scanFile', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('fileResult').innerText = JSON.stringify(data, null, 2);
+      })
+      .catch(error => {
+        document.getElementById('fileResult').innerText = "Ошибка: " + error;
+      });
+    });
+
+    // Обработка формы для ссылки
+    document.getElementById('linkForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var url = document.getElementById('linkInput').value;
+      fetch('/scanLink', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('linkResult').innerText = JSON.stringify(data, null, 2);
+      })
+      .catch(error => {
+        document.getElementById('linkResult').innerText = "Ошибка: " + error;
+      });
+    });
+</script>
+</body>
+</html>
