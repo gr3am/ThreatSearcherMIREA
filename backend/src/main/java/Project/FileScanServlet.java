@@ -1,6 +1,7 @@
 package Project;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,6 +14,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
+@MultipartConfig(
+        fileSizeThreshold   = 1024 * 1024,  // 1MB
+        maxFileSize         = 10 * 1024 * 1024, // 10MB
+        maxRequestSize      = 20 * 1024 * 1024  // 20MB
+)
 public class FileScanServlet extends HttpServlet {
     private static final Logger logger = LogManager.getLogger(FileScanServlet.class);
     private static final long serialVersionUID = 1L;
