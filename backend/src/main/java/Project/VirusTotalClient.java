@@ -10,10 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class VirusTotalClient {
-
-    // Метод для сканирования файла
     public static JSONObject scanFile(byte[] fileBytes, String filename, String apiKey) throws Exception {
-        // URL для загрузки файлов (v2 API используется для примера)
         String urlString = "https://www.virustotal.com/vtapi/v2/file/scan";
         URL url = new URL(urlString);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -24,12 +21,10 @@ public class VirusTotalClient {
         con.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
 
         try (DataOutputStream out = new DataOutputStream(con.getOutputStream())) {
-            // API ключ
             out.writeBytes("--" + boundary + "\r\n");
             out.writeBytes("Content-Disposition: form-data; name=\"apikey\"\r\n\r\n");
             out.writeBytes(apiKey + "\r\n");
 
-            // Файл
             out.writeBytes("--" + boundary + "\r\n");
             out.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + filename + "\"\r\n");
             out.writeBytes("Content-Type: application/octet-stream\r\n\r\n");
@@ -43,9 +38,7 @@ public class VirusTotalClient {
         return new JSONObject(response);
     }
 
-    // Метод для сканирования ссылки
     public static JSONObject scanUrl(String urlToScan, String apiKey) throws Exception {
-        // URL для проверки ссылок
         String urlString = "https://www.virustotal.com/vtapi/v2/url/scan";
         URL url = new URL(urlString);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -62,7 +55,6 @@ public class VirusTotalClient {
         return new JSONObject(response);
     }
 
-    // Вспомогательный метод для чтения ответа
     private static String getResponse(HttpURLConnection con) throws Exception {
         InputStream is;
         if (con.getResponseCode() >= 200 && con.getResponseCode() < 300) {

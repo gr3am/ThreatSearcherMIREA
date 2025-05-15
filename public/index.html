@@ -1,39 +1,135 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <title>VirusTotal Checker</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 2rem; }
-        .container { max-width: 600px; margin: auto; }
-        form { margin-bottom: 2rem; }
-        input[type="text"], input[type="file"] { width: 100%; padding: 8px; margin-top: 8px; }
-        button { padding: 10px 20px; margin-top: 10px; }
-        .result { background: #f0f0f0; padding: 10px; margin-top: 10px; }
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: #F4F4F4;
+        }
+
+        .header {
+          padding: 15px 0;
+          background-color: #FFFFFF;
+        }
+
+        .header__link {
+          display: flex;
+          align-items: center;
+        }
+
+        .container {
+          max-width: 1000px;
+          margin: 0 auto;
+          padding: 0 200px;
+        }
+
+        .title-text {
+          font-weight: 600;
+          font-size: 48px;
+          line-height: 120%;
+          letter-spacing: -2%;
+          text-align: center;
+          margin: 40px 0 0 0;
+        }
+
+        .big-text {
+          text-transform: uppercase;
+          color: #259DD6;
+        }
+
+        .mini-title {
+          font-weight: 400;
+          font-size: 32px;
+          line-height: 120%;
+          letter-spacing: -2%;
+          margin: 20px 0 20px;
+        }
+
+        form {
+          margin-bottom: 2rem;
+        }
+
+        input[type="file"] {
+          width: 100%;
+          margin-top: 8px;
+        }
+
+        input[type="text"] {
+          width: 100%;
+          padding: 15px;
+          margin-top: 8px;
+          cursor: pointer;
+        }
+
+        input[type="text"]::placeholder {
+          font-size: 16px;
+          line-height: 120%;
+          letter-spacing: -2%;
+        }
+
+        button {
+          padding: 10px 20px;
+          margin-top: 10px;
+          background: linear-gradient(270deg, #537CCB 0%, #13AED7 100%);
+          border: none;
+          border-radius: 16px;
+          color: #FFFFFF;
+          font-weight: 700;
+          font-size: 16px;
+          line-height: 125%;
+          letter-spacing: -2%;
+        }
+
+        .result {
+          background-color: #F4F4F4;
+          padding: 10px;
+          margin-top: 10px;
+        }
     </style>
 </head>
+
 <body>
-<div class="container">
-    <h1>Проверка на безопасность</h1>
+<header class="header">
+    <div class="container">
+        <a class="header__link" href="#">
+            <svg width="50" height="50" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <rect width="200" height="200" rx="20" fill="#FFFFFF" />
+                <path d="M100 20L40 50V90C40 130 80 160 100 170C120 160 160 130 160 90V50L100 20Z" fill="#2a5bd7" />
+                <circle cx="130" cy="70" r="30" fill="none" stroke="white" stroke-width="8" />
+                <path d="M150 90L170 110" stroke="white" stroke-width="8" />
+                <text x="100" y="190" font-family="Arial" font-size="16" fill="#333" text-anchor="middle">VirusTotal
+                    Checker</text>
+            </svg>
+        </a>
+    </div>
+</header>
+<main>
+    <div class="container">
+        <h1 class="title-text">Проверка на <span class="big-text">безопасность</span></h1>
 
-    <h2>Проверка файла</h2>
-    <form id="fileForm">
-        <input type="file" id="fileInput" name="file" required />
-        <button type="submit">Отправить файл</button>
-    </form>
-    <div id="fileResult" class="result"></div>
+        <h2 class="mini-title">Проверка файла</h2>
+        <form id="fileForm">
+            <input type="file" id="fileInput" name="file" required />
+            <button type="submit">Отправить файл</button>
+        </form>
+        <div id="fileResult" class="result"></div>
 
-    <h2>Проверка ссылки</h2>
-    <form id="linkForm">
-        <input type="text" id="linkInput" name="url" placeholder="Введите URL" required />
-        <button type="submit">Проверить ссылку</button>
-    </form>
-    <div id="linkResult" class="result"></div>
-</div>
+        <h2 class="mini-title">Проверка ссылки</h2>
+        <form id="linkForm">
+            <input type="text" id="linkInput" name="url" placeholder="Введите URL" required />
+            <button type="submit">Проверить ссылку</button>
+        </form>
+        <div id="linkResult" class="result"></div>
+    </div>
+</main>
 
 <script>
-    // Обработка формы для файла
-    document.getElementById('fileForm').addEventListener('submit', function(e) {
+    document.getElementById('fileForm').addEventListener('submit', function (e) {
       e.preventDefault();
       var fileInput = document.getElementById('fileInput');
       if (fileInput.files.length === 0) {
@@ -48,17 +144,16 @@
         method: 'POST',
         body: formData
       })
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('fileResult').innerText = JSON.stringify(data, null, 2);
-      })
-      .catch(error => {
-        document.getElementById('fileResult').innerText = "Ошибка: " + error;
-      });
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('fileResult').innerText = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+          document.getElementById('fileResult').innerText = "Ошибка: " + error;
+        });
     });
 
-    // Обработка формы для ссылки
-    document.getElementById('linkForm').addEventListener('submit', function(e) {
+    document.getElementById('linkForm').addEventListener('submit', function (e) {
       e.preventDefault();
       var url = document.getElementById('linkInput').value;
       fetch('/scanLink', {
@@ -66,14 +161,15 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: url })
       })
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('linkResult').innerText = JSON.stringify(data, null, 2);
-      })
-      .catch(error => {
-        document.getElementById('linkResult').innerText = "Ошибка: " + error;
-      });
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('linkResult').innerText = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+          document.getElementById('linkResult').innerText = "Ошибка: " + error;
+        });
     });
 </script>
 </body>
+
 </html>

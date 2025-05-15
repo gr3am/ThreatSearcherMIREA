@@ -1,7 +1,6 @@
 package Project;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,16 +13,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
-@MultipartConfig(
-        fileSizeThreshold   = 1024 * 1024,  // 1MB
-        maxFileSize         = 10 * 1024 * 1024, // 10MB
-        maxRequestSize      = 20 * 1024 * 1024  // 20MB
-)
 public class FileScanServlet extends HttpServlet {
     private static final Logger logger = LogManager.getLogger(FileScanServlet.class);
     private static final long serialVersionUID = 1L;
 
-    // Укажите ваш VirusTotal API ключ
     private static final String VT_API_KEY = "f6aba97e640126d95e38d95c0d11fc4a5fdf920278fb6770486038c877f30a8d";
 
     @Override
@@ -31,7 +24,7 @@ public class FileScanServlet extends HttpServlet {
             throws ServletException, IOException {
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
-        Part filePart = req.getPart("file");  // имя поля должно быть "file"
+        Part filePart = req.getPart("file");
 
         if (filePart == null) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -39,17 +32,13 @@ public class FileScanServlet extends HttpServlet {
             return;
         }
 
-        // Чтение файла в массив байтов
         InputStream fileContent = filePart.getInputStream();
         byte[] fileBytes = fileContent.readAllBytes();
 
         try {
-            // Отправляем файл на проверку
             JSONObject vtResponse = VirusTotalClient.scanFile(fileBytes, filePart.getSubmittedFileName(), VT_API_KEY);
-            // Логируем запрос в БД
-            DatabaseLogger.logRequest("file", filePart.getSubmittedFileName(), vtResponse.toString());
 
-            out.print(vtResponse.toString());
+            out.print(vtResponse);
         } catch (Exception ex) {
             logger.error("Ошибка при сканировании файла", ex);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
