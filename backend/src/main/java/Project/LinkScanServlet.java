@@ -24,6 +24,7 @@ public class LinkScanServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
         StringBuilder sb = new StringBuilder();
         String line;
+
         try (BufferedReader reader = req.getReader()) {
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
@@ -42,7 +43,13 @@ public class LinkScanServlet extends HttpServlet {
 
             JSONObject vtResponse = VirusTotalClient.scanUrl(url, VT_API_KEY);
 
-            out.print(vtResponse);
+            JSONObject simplified = new JSONObject();
+            simplified.put("url", vtResponse.optString("url", url));
+            simplified.put("positives", vtResponse.optInt("positives", -1));
+            simplified.put("total", vtResponse.optInt("total", -1));
+            simplified.put("permalink", vtResponse.optString("permalink", "N/A"));
+
+            out.print(simplified);
         } catch (Exception ex) {
             logger.error("Ошибка при сканировании ссылки", ex);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

@@ -36,9 +36,19 @@ public class FileScanServlet extends HttpServlet {
         byte[] fileBytes = fileContent.readAllBytes();
 
         try {
-            JSONObject vtResponse = VirusTotalClient.scanFile(fileBytes, filePart.getSubmittedFileName(), VT_API_KEY);
+            JSONObject vtResponse = VirusTotalClient.scanFile(
+                    fileBytes,
+                    filePart.getSubmittedFileName(),
+                    VT_API_KEY
+            );
 
-            out.print(vtResponse);
+            JSONObject simplified = new JSONObject();
+            simplified.put("filename", filePart.getSubmittedFileName());
+            simplified.put("positives", vtResponse.optInt("positives", -1));
+            simplified.put("total", vtResponse.optInt("total", -1));
+            simplified.put("permalink", vtResponse.optString("permalink", "N/A"));
+
+            out.print(simplified);
         } catch (Exception ex) {
             logger.error("Ошибка при сканировании файла", ex);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
